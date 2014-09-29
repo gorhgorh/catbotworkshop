@@ -2,8 +2,8 @@
 // generated on 2014-09-28 using generator-gulp-webapp 0.1.0
 
 var gulp = require('gulp'),
-    merge = require('merge-stream'),
-    fileinclude = require('gulp-file-include');
+    merge = require('merge-stream');
+    //fileinclude = require('gulp-file-include');
 
 // gulp.task('fileinclude', function() {
 //   return gulp.src(['dest/*.html'])
@@ -66,7 +66,8 @@ gulp.task('html', ['styles', 'scripts'], function () {
 });
 
 gulp.task('images', function () {
-    return gulp.src('app/images/**/*')
+    return gulp.src('app/images/**/**.{png,gif,jpeg,jpg}')
+        .pipe($.cache.clear())
         .pipe($.cache($.imagemin({
             optimizationLevel: 3,
             progressive: true,
@@ -74,6 +75,15 @@ gulp.task('images', function () {
         })))
         .pipe(gulp.dest('dist/images'))
         .pipe($.size());
+});
+
+gulp.task('cc', function() {
+  // Still pass the files to clear cache for
+  gulp.src('./lib/*.js')
+    .pipe($.cache.clear());
+
+  // Or, just call this for everything
+  $.cache.clearAll();
 });
 
 gulp.task('fonts', function () {
@@ -93,7 +103,7 @@ gulp.task('clean', function () {
     return gulp.src(['.tmp', 'dist'], { read: false }).pipe($.clean());
 });
 
-gulp.task('build', ['html', 'images', 'fonts', 'extras','B386']);
+gulp.task('build', ['html', 'images', 'fonts', 'extras']);
 
 gulp.task('default', ['clean'], function () {
     gulp.start('build');
@@ -149,9 +159,11 @@ gulp.task('watch', ['connect', 'serve'], function () {
     ]).on('change', function (file) {
         server.changed(file.path);
     });
-    gulp.watch('dest/**/*.html', ['fileinclude']);
+    // gulp.watch('dest/**/*.html', ['fileinclude']);
     gulp.watch('app/styles/**/*.scss', ['styles']);
     gulp.watch('app/scripts/**/*.js', ['scripts']);
     gulp.watch('app/images/**/*', ['images']);
     gulp.watch('bower.json', ['wiredep']);
 });
+
+
